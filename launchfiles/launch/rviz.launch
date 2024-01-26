@@ -1,0 +1,3 @@
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find pioneer3dx_launchfiles)/launch/pioneer3dx.rviz" required="true" />
+</launch>

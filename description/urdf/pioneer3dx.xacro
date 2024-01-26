@@ -1,0 +1,301 @@
+<?xml version="1.0"?>
+
+<robot  name="pioneer3dx"
+        xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+        xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	      xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	      xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:property name="base_mass" value="5"/>
+  <xacro:property name="base_frame" value="base_link"/>
+  
+  <xacro:include filename="$(find pioneer3dx_description)/urdf/pioneer3dx.gazebo"/>
+  <xacro:include filename="$(find pioneer3dx_description)/urdf/pioneer3dx_wheel.xacro"/>
+  
+  <xacro:macro name="cuboid_inertial" params="lx ly lz mass origin_xyz">
+      <inertial>
+        <mass value="${mass}"/>
+        <origin xyz="${origin_xyz}"/>
+        <inertia 
+          ixx="${(1/12) * mass * ((ly*ly) + (lz*lz))}"
+          iyy="${(1/12) * mass * ((lx*lx) + (lz*lz))}"
+          izz="${(1/12) * mass * ((lx*lx) + (ly*ly))}"
+          ixy="0"
+          ixz="0"
+          iyz="0"
+        />
+      </inertial>
+  </xacro:macro>
+  
+  <link name="base_link"/>
+  
+  <joint name="base_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base"/>
+  </joint>
+  
+  <link name="base">
+    <xacro:cuboid_inertial
+      lx="0.435"
+      ly="0.275"
+      lz="0.17"
+      mass="${base_mass}"
+      origin_xyz="-0.045 0 0.148"
+    />
+    <visual>
+      <origin xyz="-0.045 0 0.148" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://pioneer3dx_description/meshes/chassis.stl"/>
+      </geometry>
+      <material name="ChassisRed">
+        <color rgba="0.851 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.045 0 0.148" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.435 0.275 0.17"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <gazebo reference="base">
+    <material>Gazebo/Red</material>
+  </gazebo>
+  
+  <joint name="base_top_plate_joint" type="fixed">
+    <origin xyz="-0.045 0 0.236" rpy="0 0 0"/>
+    <parent link="base"/>
+    <child link="top_plate"/>
+  </joint>
+  
+  <link name="top_plate">
+    <xacro:cuboid_inertial
+      lx="0.445"
+      ly="0.375"
+      lz="0.004"
+      mass="0.25"
+      origin_xyz="0 0 0"
+    />
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://pioneer3dx_description/meshes/top.stl"/>
+      </geometry>
+      <material name="TopBlack">
+        <color rgba="0.038 0.038 0.038 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.445 0.375 0.004"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <gazebo reference="top_plate">
+    <material value="Gazebo/Black"/>
+  </gazebo>
+  
+  <joint name="base_swivel_joint" type="continuous">
+    <origin xyz="-0.185 0 0.053" rpy="0 0 0"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+    <parent link="base"/>
+    <child link="caster_swivel"/>
+  </joint>
+  
+  <link name="caster_swivel">
+    <xacro:cuboid_inertial
+      lx="0.07"
+      ly="0.065"
+      lz="0.055"
+      mass="0.1"
+      origin_xyz="0 0 0"
+    />
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://pioneer3dx_description/meshes/caster_swivel.stl"/>
+      </geometry>
+      <material name="CasterSwivel">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+  </link>
+  
+  <gazebo reference="caster_swivel">
+    <material value="Gazebo/Grey"/>
+  </gazebo>
+  
+  <joint name="caster_swivel_hub_joint" type="continuous">
+    <origin xyz="-0.026 0 -0.016" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+    <parent link="caster_swivel"/>
+    <child link="caster_wheel"/>
+  </joint>
+  
+  <link name="caster_wheel">
+    <xacro:cylinder_inertial
+        radius="0.0375"
+        height="0.03"
+        mass="0.05"
+        origin_xyz="0 0 0"
+        origin_rpy="${pi/2} 0 0"
+    />
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://pioneer3dx_description/meshes/caster_wheel.stl"/>
+      </geometry>
+      <material name="WheelBlack">
+        <color rgba="0.117 0.117 0.117 1"/>
+      </material>
+    </visual>
+    <collision>
+      <!--origin xyz="0 0 0" rpy="${pi} 0 0"/-->
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.0375"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <gazebo reference="caster_wheel">
+    <material value="Gazebo/Black"/>
+    <mu1>0.01</mu1>
+    <mu2>0.01</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+  </gazebo>
+  
+  <joint name="caster_wheel_hub_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="caster_wheel"/>
+    <child link="caster_hubcap"/>
+  </joint>
+  
+  <link name="caster_hubcap">
+    <xacro:cylinder_inertial
+        radius="0.015"
+        height="0.04"
+        mass="0.05"
+        origin_xyz="0 0 0"
+        origin_rpy="${pi/2} 0 0"
+    />
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://pioneer3dx_description/meshes/caster_hubcap.stl"/>
+      </geometry>
+      <material name="CasterSwivel">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+  </link>
+  
+  <gazebo reference="caster_hubcap">
+    <material value="Gazebo/Grey"/>
+  </gazebo>
+  
+  <xacro:pioneer3dx_wheel prefix="left" parent="base" reflect="1"/>
+  <xacro:pioneer3dx_wheel prefix="right" parent="base" reflect="-1"/>
+  
+  <!-- Sensors -->
+  <joint name="base_front_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="-0.198 0 0.208"/>
+    <parent link="base_link"/>
+    <child link="front_sonar"/>
+  </joint>
+  
+  <link name="front_sonar">
+    <inertial>
+			<mass value="1e-5" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+		</inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://pioneer3dx_description/meshes/front_sonar.stl"/>
+      </geometry>
+      <material name="SonarYellow">
+        <color rgba="0.715 0.583 0.210 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <gazebo reference="front_sonar">
+    <material value="Gazebo/Yellow"/>
+  </gazebo>
+  
+  <joint name="base_back_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.109 0 0.209"/>
+    <parent link="base_link"/>
+    <child link="back_sonar"/>
+  </joint>
+  
+  <link name="back_sonar">
+    <inertial>
+			<mass value="1e-5" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+		</inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://pioneer3dx_description/meshes/back_sonar.stl"/>
+      </geometry>
+      <material name="SonarYellow">
+        <color rgba="0.715 0.583 0.210 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <gazebo reference="back_sonar">
+    <material value="Gazebo/Yellow"/>
+  </gazebo>
+  
+	<!-- lms100 laser -->
+	<joint name="lms100_joint" type="fixed">
+		<origin xyz="0.16 0 0.15" rpy="0 0 0" />
+		<parent link="base_link" />
+		<child link="lms100" />
+	</joint>
+	
+	<link name="lms100">
+		<inertial>
+			<mass value="1e-5" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://p3dx_description/meshes/lms100.dae" />     
+			</geometry>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.01 0.01 0.01" />
+			</geometry>
+		</collision>
+	</link>
+
+	<!-- Openni Kinect -->
+	<xacro:include filename="$(find pioneer3dx_description)/urdf/openni_kinect.xacro"/>
+	
+	<xacro:sensor_kinect
+	  parent="base"
+	  cam_px="0.16"
+	  cam_py="0"
+	  cam_pz="0.25"
+	  cam_or="0"
+	  cam_op="-0.15"
+	  cam_oy="0"/>
+  
+</robot>

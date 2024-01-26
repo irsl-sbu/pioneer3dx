@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>pioneer3dx_description</name>
+  <version>0.1.0</version>
+  
+  <description>
+    URDF file descriptions for Adept MobileRobots/ActivMedia Pioneer 3DX robot
+  </description>
+
+  <license>TODO</license>
+
+  <maintainer email="dasha.lingam@gmail.com">Dasharadhan Mahalingam</maintainer>
+  <author email="dasha.lingam@gmail.com">Dasharadhan Mahalingam</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>urdf</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>robot_state_publisher</build_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>urdf</run_depend>
+
+  <run_depend>std_msgs</run_depend>
+
+</package>

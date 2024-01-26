@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:macro name="cylinder_inertial" params="radius height mass origin_xyz origin_rpy">
+    <inertial>
+      <mass value="${mass}"/>
+      <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+      <inertia
+        ixx="${(1/12) * mass * ((3*radius*radius) + (height*height))}"
+        iyy="${(1/12) * mass * ((3*radius*radius) + (height*height))}"
+        izz="${0.5 * mass * radius * radius}"
+        ixy="0"
+        ixz="0"
+        iyz="0"
+      />
+    </inertial>
+  </xacro:macro> 
+
+  <xacro:macro name="pioneer3dx_wheel" params="prefix parent reflect">
+    
+    <xacro:property name="wheel_radius" value="0.09"/>
+    <xacro:property name="wheel_width" value="0.045"/>
+    <xacro:property name="wheel_mass" value="0.25"/>
+    
+    <xacro:property name="hub_radius" value="0.05"/>
+    <xacro:property name="hub_width" value="0.045"/>
+    <xacro:property name="hub_mass" value="0.01"/>
+    
+    <xacro:property name="wheel_joint_effort_limit" value="25"/>
+    <xacro:property name="wheel_joint_velocity_limit" value="25"/>
+    
+    <xacro:property name="wheel_mu1" value="100"/>
+    <xacro:property name="wheel_mu2" value="100"/>
+    <xacro:property name="wheel_kp" value="100000000.0"/>
+    <xacro:property name="wheel_kd" value="1.0"/>
+    
+    <joint name="${prefix}_hub_joint" type="fixed">
+      <origin rpy="0 0 0" xyz="0 ${reflect * 0.158} 0.09"/>
+      <parent link="${parent}"/>
+      <child link="${prefix}_hub"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    
+    <link name="${prefix}_hub">
+      <xacro:cylinder_inertial
+        radius="${hub_radius}"
+        height="${hub_width}"
+        mass="${hub_mass}"
+        origin_xyz="0 0 0"
+        origin_rpy="0 0 0"
+      />
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pioneer3dx_description/meshes/${prefix}_hubcap.stl"/>
+        </geometry>
+      </visual>
+    </link>
+    
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <axis xyz="0 1 0"/>
+      <limit effort="${wheel_joint_effort_limit}" velocity="${wheel_joint_velocity_limit}"/>
+      <joint_properties damping="0.0" friction="0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}_hub"/>
+      <child link="${prefix}_wheel"/>
+    </joint>
+    
+    <link name="${prefix}_wheel">
+      <xacro:cylinder_inertial
+        radius="${wheel_radius}"
+        height="${wheel_width}"
+        mass="${wheel_mass}"
+        origin_xyz="0 0 0"
+        origin_rpy="${pi/2} 0 0"
+      />
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pioneer3dx_description/meshes/${prefix}_wheel.stl"/>
+        </geometry>
+        <material name="WheelBlack">
+          <color rgba="0.117 0.117 0.117 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+    </link>
+    
+    <!-- gazebo tags -->
+    <transmission name="${prefix}_wheel_joint_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}_wheel_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}_wheel_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+    
+    <gazebo reference="${prefix}_wheel">
+      <material value="Gazebo/Black"/>
+      <mu1>${wheel_mu1}</mu1>
+      <mu2>${wheel_mu2}</mu2>
+      <kp>${wheel_kp}</kp>
+      <kd>${wheel_kd}</kd>
+    </gazebo>
+    
+    <gazebo reference="${prefix}_hub">
+      <material value="Gazebo/Yellow"/>
+    </gazebo>
+    
+    <gazebo reference="${prefix}_wheel">
+      <material value="Gazebo/Black"/>
+    </gazebo>
+      
+  </xacro:macro>
+
+</robot>

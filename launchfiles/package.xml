@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <name>pioneer3dx_launchfiles</name>
+  <version>0.1.0</version>
+
+  <description>
+    Launch files for use with rosaria and Adept MobileRobots/ActivMedia Pioneer 3DX robot
+  </description>
+
+  <license>TODO</license>
+  
+  <maintainer email="dasha.lingam@gmail.com">Dasharadhan Mahalingam</maintainer>
+  <author email="dasha.lingam@gmail.com">Dasharadhan Mahalingam</author>
+  
+  <run_depend>roslaunch</run_depend>
+</package>

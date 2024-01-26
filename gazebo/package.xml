@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>pioneer3dx_gazebo</name>
+  <version>0.1.0</version>
+  <description>Gazebo world, model and launch files for simulating Adept MobileRobots/ActivMedia Pioneer 3DX robot for use with ROS</description>
+
+  <license>TODO</license>
+
+  <maintainer email="dasha.lingam@gmail.com">Dasharadhan Mahalingam</maintainer>
+  <author email="dasha.lingam@gmail.com">Dasharadhan Mahalingam</author>
+
+  <run_depend>gazebo_ros_pkgs</run_depend>
+  <export>
+    <gazebo_ros gazebo_model_path="${prefix}/models" />
+    <gazebo_ros gazebo_media_path="${prefix}/models" />
+  </export>
+</package>
