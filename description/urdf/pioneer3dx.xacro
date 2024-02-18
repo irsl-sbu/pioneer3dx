@@ -275,7 +275,7 @@
 		<visual>
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<geometry>
-				<mesh filename="package://p3dx_description/meshes/lms100.dae" />     
+				<mesh filename="package://pioneer3dx_description/meshes/lms100.dae" />     
 			</geometry>
 		</visual>
 		<collision>
